@@ -1,0 +1,78 @@
+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+%YAML 1.2
+---
+$id: "http://devicetree.org/schemas/iio/adc/ti,ads7142.yaml#"
+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+
+title: Texas Instruments ADS7142 dual-channel, programmable sensor monitor device tree bindings
+
+maintainers:
+  - József Horváth <info@ministro.hu>
+
+description:
+  This document is for describing the required device tree parameters for ads7142 adc driver.
+  The required parameters for proper operation are described below.
+  https://www.ti.com/lit/ds/symlink/ads7142.pdf
+
+allOf:
+  - $ref: "adc.yaml#"
+
+properties:
+  compatible:
+    const: ti,ads7142
+
+  interrupts:
+    maxItems: 1
+
+  vref-supply:
+    description: Power supply for the reference voltage
+
+  "#io-channel-cells":
+    const: 1
+  
+  "ti,osc-sel":
+    description: |
+      If present, the driver selects the high speed oscillator.
+      See chapter 7.3.5 Oscillator and Timing Control in datasheet.
+    type: boolean
+
+  "ti,n-clk":
+    description: |
+      nCLK is number of clocks in one conversion cycle.
+      See chapter 7.3.5 Oscillator and Timing Control in datasheet.
+    $ref: /schemas/types.yaml#/definitions/uint32
+    maximum: 255
+    minimum: 0
+
+  "ti,monitoring-mode":
+    description: |
+      If present, the driver selects the monitoring mode.
+      See chapter 7.4 Device Functional Modes in datasheet.
+    type: boolean
+
+required:
+  - compatible
+  - "#io-channel-cells"
+
+patternProperties:
+  "^channel@[0-7]$":
+    $ref: "adc.yaml"
+    type: object
+    description: |
+      Represents the external channels which are connected to the ADC.
+    properties:
+      reg:
+        description: |
+          The channel number.
+        items:
+        - minimum: 0
+        - maximum: 1
+
+    required:
+      - reg
+
+  additionalProperties: false
+
+additionalProperties: false
+
+examples:

@@ -1,0 +1,10 @@
+dl/
+output/
+build/
+.ads7142.*
+Module.symvers
+modules.order
+*.o
+*.ko
+*.mod
+*.mod.*
