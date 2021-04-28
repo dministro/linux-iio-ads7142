@@ -25,9 +25,6 @@
 				reg = <0x_OL_ADDR_>; /* i2c address */
 				interrupt-parent = <&gpio>;
 				interrupts = <_OL_IRQ_ 0x2>; /* GPIO and falling edge */
-				gpio-controller;
-				#gpio-cells = <0>;
-				i2c-max-frequency = <100000>;
 				status = "okay";
 
 				#address-cells = <1>;
@@ -36,6 +33,8 @@
 				#io-channel-cells = <1>;
 
 				_OL_VREF_
+
+				_OL_MONITORING_MODE_
 
 				channel@0 {
 					reg = <0>;

@@ -11,6 +11,7 @@ OL_BUS ?= 1
 OL_ADDR ?= 18
 OL_IRQ ?= 20
 OL_VREF ?=
+OL_MONITORING_MODE ?=
 
 OL_DTS_NAME = ads7142_i2c$(OL_BUS)_$(OL_ADDR)-overlay.dts
 OL_DTBO_NAME = ads7142_i2c$(OL_BUS)_$(OL_ADDR)
@@ -18,6 +19,10 @@ OL_DTBO_FILE = $(OL_DTBO_NAME).dtbo
 
 ifneq ($(OL_VREF),)
 OL_VREF_LINE = vref-supply = <\&$(OL_VREF)>;
+endif
+
+ifeq ($(OL_MONITORING_MODE),y)
+OL_MONITORING_MODE_LINE = ti,monitoring-mode;
 endif
 
 define boot_change_line
@@ -44,6 +49,7 @@ overlay:
 	sed --expression='s/_OL_ADDR_/$(OL_ADDR)/g' | \
 	sed --expression='s/_OL_IRQ_/$(OL_IRQ)/g' > \
 	sed --expression='s/_OL_VREF_/$(OL_VREF_LINE)/g' > \
+	sed --expression='s/_OL_MONITORING_MODE_/$(OL_MONITORING_MODE_LINE)/g' > \
 	$(OL_BUILD)/$(OL_DTS_NAME)
 	$(DTC) -W no-unit_address_vs_reg -@ -I dts -O dtb -o $(OL_BUILD)/$(OL_DTBO_FILE) $(OL_BUILD)/$(OL_DTS_NAME)
 
