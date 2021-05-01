@@ -33,15 +33,15 @@ Additional readings:
 
 ### 1.2. Compile
 
->git clone https://github.com/dministro/linux-serial-ads7142<br>
-cd linux-serial-ads7142/src/linux/drivers/tty/serial<br>
+>git clone https://github.com/dministro/linux-iio-ads7142<br>
+cd linux-serial-ads7142/src/linux/drivers/iio/adc<br>
 make -C `/path/to/kernel/source` M=$(pwd) modules
 
 ## 2. Interfaces
 
 ### 2.1. Device tree bindings
 
-You can see the required parameters in [ti,ads7142.yaml](src/linux/Documentation/devicetree/bindings/serial/ti,ads7142.yaml)
+You can see the required parameters in [ti,ads7142.yaml](src/linux/Documentation/devicetree/bindings/iio/adc/ti,ads7142.yaml)
 
 ### 2.2. device
 
