@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2020 Jozsef Horvath <info@ministro.hu>
+ *
+ */
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <getopt.h>
