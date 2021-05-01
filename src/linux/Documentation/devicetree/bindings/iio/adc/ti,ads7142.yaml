@@ -89,6 +89,7 @@ properties:
 
 patternProperties:
   "^channel@[0-1]$":
+    $ref: "adc.yaml"
     type: object
     description: |
       Represents the external channels which are connected to the ADC.
