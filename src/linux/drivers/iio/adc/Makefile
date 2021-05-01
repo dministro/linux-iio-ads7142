@@ -1,1 +1,1 @@
-obj-m := ads7142.o
+obj-m := ti-ads7142.o

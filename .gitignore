@@ -1,10 +1,12 @@
 dl/
 output/
 build/
-.ads7142.*
 Module.symvers
 modules.order
+modules.builtin
+.*
 *.o
+*.o.*
 *.ko
 *.mod
 *.mod.*

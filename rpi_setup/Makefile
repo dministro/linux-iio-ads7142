@@ -9,7 +9,7 @@ DTC = dtc
 OL_VREF_LINE =
 OL_BUS ?= 1
 OL_ADDR ?= 18
-OL_IRQ ?= 20
+OL_IRQ ?= 16
 OL_VREF ?=
 OL_MONITORING_MODE ?=
 
@@ -23,6 +23,38 @@ endif
 
 ifeq ($(OL_MONITORING_MODE),y)
 OL_MONITORING_MODE_LINE = ti,monitoring-mode;
+
+OL_GPIO_LINE = ads7142_$(OL_BUS)_$(OL_ADDR)_pins: ads7142_$(OL_BUS)_$(OL_ADDR)_pins {\n
+OL_GPIO_LINE += brcm,pins = <$(OL_IRQ)>; \/* rdy\/busy *\/\n
+OL_GPIO_LINE += brcm,function = <0>; \/* input *\/\n
+OL_GPIO_LINE += };\n
+
+OL_INTERRUPTS_LINE = interrupt-parent = <\&gpio>;\n
+OL_INTERRUPTS_LINE += interrupts = <$(OL_IRQ) 0x2>; \/* GPIO and falling edge *\/\n
+
+ifneq ($(OL_CH0_LTH),)
+OL_CH0_LTH_LINE = ti,threshold-falling = <$(OL_CH0_LTH)>;
+endif
+
+ifneq ($(OL_CH0_HTH),)
+OL_CH0_HTH_LINE = ti,threshold-rising = <$(OL_CH0_HTH)>;
+endif
+
+ifneq ($(OL_CH0_HYS),)
+OL_CH0_HYS_LINE = ti,hysteresis = <$(OL_CH0_HYS)>;
+endif
+
+ifneq ($(OL_CH1_LTH),)
+OL_CH1_LTH_LINE = ti,threshold-falling = <$(OL_CH1_LTH)>;
+endif
+
+ifneq ($(OL_CH1_HTH),)
+OL_CH1_HTH_LINE = ti,threshold-rising = <$(OL_CH1_HTH)>;
+endif
+
+ifneq ($(OL_CH1_HYS),)
+OL_CH1_HYS_LINE = ti,hysteresis = <$(OL_CH1_HYS)>;
+endif
 endif
 
 define boot_change_line
@@ -39,8 +71,14 @@ driver:
 	make -C /lib/modules/$(shell uname -r)/build M=$(ROOT_DIR)/../src/linux/drivers/iio/adc modules
 
 driver-install: driver
-	cp $(ROOT_DIR)/../src/linux/drivers/iio/adc/ads7142.ko /lib/modules/$(shell uname -r)/extra
+	cp $(ROOT_DIR)/../src/linux/drivers/iio/adc/ti-ads7142.ko /lib/modules/$(shell uname -r)/extra
 	depmod
+
+iio-adc-test:
+	make -C $(ROOT_DIR)/../test/iio-adc-test release
+	mkdir -p $(ROOT_DIR)/output/test
+	cp $(ROOT_DIR)/../test/iio-adc-test/build/iio-adc-test $(ROOT_DIR)/output/test
+	chmod +x $(ROOT_DIR)/output/test/iio-adc-test
 
 overlay:
 	mkdir -p $(OL_BUILD)
@@ -48,8 +86,16 @@ overlay:
 	sed --expression='s/_OL_BUS_/$(OL_BUS)/g' | \
 	sed --expression='s/_OL_ADDR_/$(OL_ADDR)/g' | \
 	sed --expression='s/_OL_IRQ_/$(OL_IRQ)/g' > \
+	sed --expression='s/_OL_GPIO_LINE_/$(OL_GPIO_LINE)/g' > \
+	sed --expression='s/_OL_INTERRUPTS_LINE_/$(OL_INTERRUPTS_LINE)/g' > \
 	sed --expression='s/_OL_VREF_/$(OL_VREF_LINE)/g' > \
 	sed --expression='s/_OL_MONITORING_MODE_/$(OL_MONITORING_MODE_LINE)/g' > \
+	sed --expression='s/_OL_CH0_LTH_/$(OL_CH0_LTH_LINE)/g' > \
+	sed --expression='s/_OL_CH0_HTH_/$(OL_CH0_HTH_LINE)/g' > \
+	sed --expression='s/_OL_CH0_HYS_/$(OL_CH0_HYS_LINE)/g' > \
+	sed --expression='s/_OL_CH1_LTH_/$(OL_CH1_LTH_LINE)/g' > \
+	sed --expression='s/_OL_CH1_HTH_/$(OL_CH1_HTH_LINE)/g' > \
+	sed --expression='s/_OL_CH1_HYS_/$(OL_CH1_HYS_LINE)/g' > \
 	$(OL_BUILD)/$(OL_DTS_NAME)
 	$(DTC) -W no-unit_address_vs_reg -@ -I dts -O dtb -o $(OL_BUILD)/$(OL_DTBO_FILE) $(OL_BUILD)/$(OL_DTS_NAME)
 
@@ -63,4 +109,4 @@ boot-configure:
 
 install: driver-install overlay-install
 
-all: install boot-configure
+all: install boot-configure iio-adc-test

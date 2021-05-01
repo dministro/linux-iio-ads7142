@@ -10,10 +10,36 @@ maintainers:
   - József Horváth <info@ministro.hu>
 
 description: |
-  This document is for describing the required device tree parameters for ads7142 adc driver.
+  This document is for describing the required device tree parameters
+   for ads7142 adc driver.
   The required parameters for proper operation are described below.
 
   Datasheet: https://www.ti.com/lit/ds/symlink/ads7142.pdf
+
+  Operation modes supportedby the driver:
+    When the 'ti,monitoring-mode' property is not present
+      in the devicetree node definition, the driver initiates a single
+      conversion in the device for each read request
+      (/sys/bus/iio/devices/iio:deviceX/in_voltageY_raw).
+      This is a one-shot conversion, and it is called
+      "Manual Mode" in the datasheet.
+
+    When the 'ti,monitoring-mode' property is present
+      in the devicetree node definition, the driver configures
+      the device's digital window comparator and sets the device's
+      data buffer operation mode to pre alert data mode.
+      The driver reads the conversion result when the BUSY/RDY interrupt
+      fires, and keeps the value until the next BUSY/RDY interrupt
+      or the first read request
+      (/sys/bus/iio/devices/iio:deviceX/in_voltageY_raw).
+      The digital window comparator and hysteresis parameters
+      can be controlled by:
+        - the devicetree definition of channel node
+        - iio sysfs interfaces
+      This is event driven conversion, and is called
+      "Autonomous Mode with Pre Alert Data" in the datasheet.
+      This mode can be used to wake up the system with the ALERT pin,
+      in case when the monitored voltage level is out of the configured range.
 
 properties:
   compatible:
@@ -40,7 +66,7 @@ properties:
 
   "#io-channel-cells":
     const: 1
-  
+
   ti,osc-sel:
     description: |
       If present, the driver selects the high speed oscillator.

@@ -7,10 +7,7 @@
 	fragment@0 {
 		target = <&gpio>;
 		__overlay__ {
-			ads7142__OL_BUS___OL_ADDR__pins: ads7142__OL_BUS___OL_ADDR__pins {
-				brcm,pins = <_OL_IRQ_>; /* rdy/busy */
-				brcm,function = <0>; /* input */
-			};
+			_OL_GPIO_LINE_
 		};
 	};
 
@@ -23,8 +20,7 @@
 			ads7142__OL_BUS___OL_ADDR_:ads7142__OL_BUS___OL_ADDR_@_OL_ADDR_ {
 				compatible = "ti,ads7142";
 				reg = <0x_OL_ADDR_>; /* i2c address */
-				interrupt-parent = <&gpio>;
-				interrupts = <_OL_IRQ_ 0x2>; /* GPIO and falling edge */
+				_OL_INTERRUPTS_LINE_
 				status = "okay";
 
 				#address-cells = <1>;
@@ -38,10 +34,18 @@
 
 				channel@0 {
 					reg = <0>;
+
+					_OL_CH0_LTH_
+					_OL_CH0_HTH_
+					_OL_CH0_HYS_
 				};
 
 				channel@1 {
 					reg = <1>;
+
+					_OL_CH1_LTH_
+					_OL_CH1_HTH_
+					_OL_CH1_HYS_
 				};
 			};
 		};
