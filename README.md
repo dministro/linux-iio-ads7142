@@ -80,7 +80,7 @@ Description:
 >Shows the scale to calculate the mV value from raw conversion result, see ref: [1]<br>
 Equation: mV = in_voltage`Y`_raw * in_voltage`Y`_scale.<br>
 *Note:*
->>This attribute comes up, when the 'vref-supply' property is present in the devicetree node definition.
+>>This attribute comes up, when the 'avdd-supply' property is present in the devicetree node definition.
 
 **events/in_voltage`Y`_thresh_either_hysteresis**
 
@@ -159,7 +159,7 @@ For the setup above:
 
 **Autonomous monitoring mode**
 >cd rpi_setup<br>
-OL_VREF=vdd_3v3_reg \\<br>
+OL_AVDD=vdd_3v3_reg \\<br>
 OL_BUS=1 \\<br>
 OL_ADDR=18 \\<br>
 OL_IRQ=16 \\<br>
@@ -174,7 +174,7 @@ make all
 
 **Manual mode**
 >cd rpi_setup<br>
-OL_VREF=vdd_3v3_reg \\<br>
+OL_AVDD=vdd_3v3_reg \\<br>
 OL_BUS=1 \\<br>
 OL_ADDR=18 \\<br>
 make all
@@ -186,7 +186,7 @@ Parameters:
   default: 18
 * **OL_IRQ**: interrupt gpio index<br>
   default: 16
-* **OL_VREF**: reference voltage regulator.<br>
+* **OL_AVDD**: reference voltage regulator.<br>
   default: 
 * **OL_MONITORING_MODE**: configures autonomous monitoring mode<br>
   default: 
@@ -248,11 +248,11 @@ See chapter 7.4.2.2 Manual Mode with AUTO Sequence in ref[0].
 
 For DM.ADS7142.BOB #0:
 >cd rpi_setup<br>
-OL_VREF=vdd_3v3_reg OL_BUS=1 OL_ADDR=1f OL_IRQ=19 make all
+OL_AVDD=vdd_3v3_reg OL_BUS=1 OL_ADDR=1f OL_IRQ=19 make all
 
 For DM.ADS7142.BOB #1:
 >cd rpi_setup<br>
-OL_VREF=vdd_3v3_reg OL_BUS=1 OL_ADDR=18 OL_IRQ=16 make all
+OL_AVDD=vdd_3v3_reg OL_BUS=1 OL_ADDR=18 OL_IRQ=16 make all
 
 #### 4.1.2. Testing
 After compiling, restart is required to load overlays.
@@ -278,7 +278,7 @@ See chapter 7.4.3.1.1 Autonomous Mode with Pre Alert Data in ref[0].
 
 For DM.ADS7142.BOB #0:
 >cd rpi_setup<br>
-OL_VREF=vdd_3v3_reg \\<br>
+OL_AVDD=vdd_3v3_reg \\<br>
 OL_BUS=1 \\<br>
 OL_ADDR=1f \\<br>
 OL_IRQ=19 \\<br>
@@ -293,7 +293,7 @@ make all
 
 For DM.ADS7142.BOB #1:
 >cd rpi_setup<br>
-OL_VREF=vdd_3v3_reg \\<br>
+OL_AVDD=vdd_3v3_reg \\<br>
 OL_BUS=1 \\<br>
 OL_ADDR=18 \\<br>
 OL_IRQ=16 \\<br>

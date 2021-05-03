@@ -53,10 +53,10 @@ properties:
       The BUSY/PDY pin is used as interrupt line in autonomous monitoring mode.
     maxItems: 1
 
-  vref-supply:
+  avdd-supply:
     description: Regulator for the reference voltage
 
-  power-supply: true
+  dvdd-supply: true
 
   "#address-cells":
     const: 1
@@ -147,8 +147,8 @@ examples:
         #size-cells = <0>;
         #io-channel-cells = <1>;
 
-        vref-supply = <&vdd_3v3_reg>;
-        power-supply = <&vdd_1v8_reg>;
+        avdd-supply = <&vdd_3v3_reg>;
+        dvdd-supply = <&vdd_1v8_reg>;
 
         channel@0 {
           reg = <0>;
@@ -171,8 +171,8 @@ examples:
 
         #io-channel-cells = <1>;
 
-        vref-supply = <&vdd_3v3_reg>;
-        power-supply = <&vdd_1v8_reg>;
+        avdd-supply = <&vdd_3v3_reg>;
+        dvdd-supply = <&vdd_1v8_reg>;
 
         interrupt-parent = <&gpio>;
         interrupts = <7 2>;

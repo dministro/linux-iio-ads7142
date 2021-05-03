@@ -6,19 +6,19 @@ OL_BUILD = $(O)/overlay/build
 
 DTC = dtc
 
-OL_VREF_LINE =
+OL_AVDD_LINE =
 OL_BUS ?= 1
 OL_ADDR ?= 18
 OL_IRQ ?= 16
-OL_VREF ?=
+OL_AVDD ?=
 OL_MONITORING_MODE ?=
 
 OL_DTS_NAME = ads7142_i2c$(OL_BUS)_$(OL_ADDR)-overlay.dts
 OL_DTBO_NAME = ads7142_i2c$(OL_BUS)_$(OL_ADDR)
 OL_DTBO_FILE = $(OL_DTBO_NAME).dtbo
 
-ifneq ($(OL_VREF),)
-OL_VREF_LINE = vref-supply = <\&$(OL_VREF)>;
+ifneq ($(OL_AVDD),)
+OL_AVDD_LINE = avdd-supply = <\&$(OL_AVDD)>;
 endif
 
 ifeq ($(OL_MONITORING_MODE),y)
@@ -88,7 +88,7 @@ overlay:
 	sed --expression='s/_OL_IRQ_/$(OL_IRQ)/g' > \
 	sed --expression='s/_OL_GPIO_LINE_/$(OL_GPIO_LINE)/g' > \
 	sed --expression='s/_OL_INTERRUPTS_LINE_/$(OL_INTERRUPTS_LINE)/g' > \
-	sed --expression='s/_OL_VREF_/$(OL_VREF_LINE)/g' > \
+	sed --expression='s/_OL_AVDD_/$(OL_AVDD_LINE)/g' > \
 	sed --expression='s/_OL_MONITORING_MODE_/$(OL_MONITORING_MODE_LINE)/g' > \
 	sed --expression='s/_OL_CH0_LTH_/$(OL_CH0_LTH_LINE)/g' > \
 	sed --expression='s/_OL_CH0_HTH_/$(OL_CH0_HTH_LINE)/g' > \

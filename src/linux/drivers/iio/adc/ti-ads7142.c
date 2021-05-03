@@ -144,8 +144,8 @@ struct ti_ads7142_config {
 
 struct ti_ads7142_priv {
 	struct mutex lock; /* For syncing access to device */
-	struct regulator *vref;
-	struct regulator *power;
+	struct regulator *avdd;
+	struct regulator *dvdd;
 	struct ti_ads7142_config config;
 	int channel_count;
 	struct ti_ads7142_channel *channels;
@@ -727,10 +727,10 @@ static int ti_ads7142_read_raw(struct iio_dev *indio_dev,
 		ret = IIO_VAL_INT;
 		break;
 	case IIO_CHAN_INFO_SCALE:
-		if (IS_ERR(priv->vref)) {
+		if (IS_ERR(priv->avdd)) {
 			ret = -EINVAL;
 		} else {
-			*val = regulator_get_voltage(priv->vref) / 1000;
+			*val = regulator_get_voltage(priv->avdd) / 1000;
 			*val2 = chan->scan_type.realbits;
 			ret = IIO_VAL_FRACTIONAL_LOG2;
 		}
@@ -985,7 +985,7 @@ static int ti_ads7142_parse_channel_config_of(struct device *dev,
 		iio_channel->indexed = 1;
 		iio_channel->info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
 						  | BIT(IIO_CHAN_INFO_SAMP_FREQ);
-		if (!IS_ERR(priv->vref))
+		if (!IS_ERR(priv->avdd))
 			iio_channel->info_mask_separate |= BIT(IIO_CHAN_INFO_SCALE);
 		iio_channel->scan_type.sign = 'u';
 		iio_channel->scan_type.realbits = 12;
@@ -1058,16 +1058,16 @@ static int ti_ads7142_probe(struct i2c_client *client,
 
 	mutex_init(&priv->lock);
 
-	priv->vref = devm_regulator_get_optional(&client->dev, "vref");
-	if (!IS_ERR(priv->vref)) {
-		ret = regulator_enable(priv->vref);
+	priv->avdd = devm_regulator_get_optional(&client->dev, "avdd");
+	if (!IS_ERR(priv->avdd)) {
+		ret = regulator_enable(priv->avdd);
 		if (ret)
 			goto err;
 	}
 
-	priv->power = devm_regulator_get_optional(&client->dev, "power");
-	if (!IS_ERR(priv->power)) {
-		ret = regulator_enable(priv->power);
+	priv->dvdd = devm_regulator_get_optional(&client->dev, "dvdd");
+	if (!IS_ERR(priv->dvdd)) {
+		ret = regulator_enable(priv->dvdd);
 		if (ret)
 			goto err_regulator;
 	}
@@ -1111,10 +1111,10 @@ static int ti_ads7142_probe(struct i2c_client *client,
 	iio_device_unregister(indio_dev);
 
 err_regulator:
-	if (!IS_ERR(priv->vref))
-		regulator_disable(priv->vref);
-	if (!IS_ERR(priv->power))
-		regulator_disable(priv->power);
+	if (!IS_ERR(priv->avdd))
+		regulator_disable(priv->avdd);
+	if (!IS_ERR(priv->dvdd))
+		regulator_disable(priv->dvdd);
 err:
 	mutex_destroy(&priv->lock);
 
@@ -1126,10 +1126,10 @@ static int ti_ads7142_remove(struct i2c_client *client)
 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 	struct ti_ads7142_priv *priv = iio_priv(indio_dev);
 
-	if (!IS_ERR(priv->vref))
-		regulator_disable(priv->vref);
-	if (!IS_ERR(priv->power))
-		regulator_disable(priv->power);
+	if (!IS_ERR(priv->avdd))
+		regulator_disable(priv->avdd);
+	if (!IS_ERR(priv->dvdd))
+		regulator_disable(priv->dvdd);
 	mutex_destroy(&priv->lock);
 	iio_device_unregister(indio_dev);
 
@@ -1149,10 +1149,10 @@ static int __maybe_unused ti_ads7142_suspend(struct device *dev)
 	if (priv->config.monitoring_mode && priv->monitor_pending)
 		return 0;
 
-	if (!IS_ERR(priv->vref))
-		regulator_disable(priv->vref);
-	if (!IS_ERR(priv->power))
-		regulator_disable(priv->power);
+	if (!IS_ERR(priv->avdd))
+		regulator_disable(priv->avdd);
+	if (!IS_ERR(priv->dvdd))
+		regulator_disable(priv->dvdd);
 
 	return 0;
 }
@@ -1169,13 +1169,13 @@ static int __maybe_unused ti_ads7142_resume(struct device *dev)
 	if (priv->config.monitoring_mode && priv->monitor_pending)
 		return 0;
 
-	if (!IS_ERR(priv->vref)) {
-		ret = regulator_enable(priv->vref);
+	if (!IS_ERR(priv->avdd)) {
+		ret = regulator_enable(priv->avdd);
 		if (ret)
 			return ret;
 	}
-	if (!IS_ERR(priv->power)) {
-		ret = regulator_enable(priv->power);
+	if (!IS_ERR(priv->dvdd)) {
+		ret = regulator_enable(priv->dvdd);
 		if (ret)
 			return ret;
 	}
@@ -1212,4 +1212,4 @@ module_i2c_driver(ti_ads7142_driver);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jozsef Horvath <info@ministro.hu>");
-MODULE_DESCRIPTION("Texas Instruments TI_ADS7142 ADC driver");
+MODULE_DESCRIPTION("Texas Instruments ADS7142 ADC driver");
