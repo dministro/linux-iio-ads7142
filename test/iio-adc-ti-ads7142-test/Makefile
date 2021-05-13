@@ -1,6 +1,6 @@
 TOP := $(shell pwd)
 BUILDDIR ?= $(TOP)/build
-OUTNAME=iio-adc-test
+OUTNAME=iio-adc-ti-ads7142-test
 DESTDIR=/usr
 
 ifeq ($(V),1)

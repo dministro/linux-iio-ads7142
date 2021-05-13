@@ -17,6 +17,60 @@
 
 #include "utils.h"
 
+int file_cat(const char *file, int start, int length, void **buff)
+{
+	int ret = 0;
+	int fd;
+	unsigned char tmp_buff[1024];
+	int size;
+	int remaining;
+	
+	fd = open(file, O_RDONLY);
+	if (fd == -1)
+		return -errno;
+
+	if (start) {
+		ret = lseek(fd, start, SEEK_SET);
+		if (ret == -1) {
+			ret = -errno;
+			goto out;
+		}
+	}
+
+	*buff = NULL;
+	size = 0;
+	do {
+		if (!length)
+			remaining = sizeof(tmp_buff);
+		else
+			remaining = length - size;
+
+		if (remaining > sizeof(tmp_buff))
+			remaining = sizeof(tmp_buff);
+
+		ret = read(fd, tmp_buff, remaining);
+		if (ret > 0) {
+			*buff = realloc(*buff, size + ret);
+			if (*buff == NULL) {
+				ret = -ENOMEM;
+				goto out;
+			}
+			memcpy(&((unsigned char*)*buff)[size], tmp_buff, ret);
+			size += ret;
+		}
+
+	} while(((!length) || (length && size < length)) && ret > 0);
+
+	if (ret == -1)
+		ret = -errno;
+	else
+		ret = size;
+out:
+	close(fd);
+
+	return ret;
+}
+
 int file_scanf(const char *file, const char *fmt, ...)
 {
 	int ret = 0;
